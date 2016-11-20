@@ -13,6 +13,7 @@ conda:
 	pip install pyusb
 	pip install pep8
 	pip install autopep8
+	pip install setuptools-pep8
 	python setup.py develop
 
 check-conda:
