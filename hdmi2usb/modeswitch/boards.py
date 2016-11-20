@@ -49,10 +49,12 @@ def firmware_path(filepath):
 BOARD_TYPES = [
     'opsis',
     'atlys',
+    'minispartan6',
 ]
 BOARD_NAMES = {
     'atlys': "Digilent Atlys",
     'opsis': "Numato Opsis",
+    'minispartan6': "Minispartan6+",
 }
 BOARD_STATES = [
     'unconfigured',
@@ -64,21 +66,25 @@ BOARD_STATES = [
 BOARD_FPGA = {
     'atlys': "6slx45csg324",
     'opsis': "6slx45tfgg484",
+    'minispartan6': "xc6slx2",
 }
 
 USBJTAG_MAPPING = {
     'hw_nexys': 'atlys',
     'hw_opsis': 'opsis',
+    'hw_minispartan6': 'minispartan6',
 }
 USBJTAG_RMAPPING = {v: k for k, v in USBJTAG_MAPPING.items()}
 
 OPENOCD_MAPPING = {
     'atlys': "board/digilent_atlys.cfg",
     'opsis': "board/numato_opsis.cfg",
+    'minispartan6': "board/minispartan6.cfg",
 }
 OPENOCD_FLASHPROXY = {
     'opsis': firmware_path('spartan6/opsis/bscan_spi_xc6slx45t.bit'),
     'atlys': firmware_path('spartan6/atlys/bscan_spi_xc6slx45.bit'),
+    'minispartan6': firmware_path('spartan6/minispartan6/bscan_spi_xc6slx25.bit'),
 }
 
 FX2_MODE_MAPPING = {
@@ -326,6 +332,13 @@ def find_boards(prefer_hardware_serial=True, verbose=False):
                     device.did,
                     device)
                 continue
+
+        # Minispartan6 FTDI FT2232C
+        # Note this is the generic FTDI ID so it probably can't be used to
+        # uniquely identify the Minispartan6
+        elif device.vid == 0x0403 and device.pid == 0x6010:
+            all_boards.append(
+                Board(dev=device, type="minispartan6", state="unconfigured"))
 
     # FIXME: This is a horrible hack!?@
     # Patch the Atlys board so the exar_uart is associated with it.
